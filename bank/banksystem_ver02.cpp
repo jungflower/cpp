@@ -1,13 +1,12 @@
 /*
-    banking management system ver 0.1
+    banking management system ver 0.2
     author=junghwalee
 */
-#if 0
 #include <iostream>
 #include <cstring>
 using namespace std;
 
-#define name_LEN 30
+const int NAME_LEN = 20;
 
 void ShowMenu(); // 메뉴 출력
 void MakeAccount(); // 1. 계좌 개설
@@ -17,17 +16,59 @@ void ShowAllAccInfo(); // 4. 잔액 조회
 
 enum {MAKE=1, DEPOSIT, WITHDRAW, INFO, EXIT};
 
-typedef struct 
+class Account
 {
-    int ID;
+private:
+    int accID;
     int balance;
-    char name[name_LEN]; // 고객 이름
-} Account;
+    char *cusname;
 
-Account acc[100]; // account 저장 위한 배열
+public:
+    Account(int ID, int balance, char* name) : accID(ID), balance(balance)
+    {
+        cusname = new char[strlen(name) + 1];
+        strcpy(cusname, name);
+    }
+
+    Account(const Account& ref) : accID(ref.accID), balance(ref.balance)
+    {
+        cusname = new char[strlen(ref.cusname) + 1];
+        strcpy(cusname, ref.cusname);
+    }
+
+    int GetAccID()  {return accID;}
+
+    void Deposit(int money)
+    {
+        balance += money;
+    }
+
+    int Withdraw(int money)
+    {
+        if(money > balance){ // 출금액 부족 시 0원 반환
+            return 0;
+        }
+        balance -= money;
+        return money;
+    }
+
+    void ShowAccInfo()
+    {
+        cout << "계좌 ID: " << accID << endl;
+        cout << "이름: " << cusname << endl;
+        cout << "금엑: " << balance << endl;
+    }
+
+    ~Account()
+    {
+        delete []cusname;
+    }
+};
+
+Account* accArr[100]; // account 저장 위한 배열
 int accNum = 0; // 계좌 개수
 
-int main2()
+int main()
 {
     while(1){
         ShowMenu();
@@ -50,6 +91,9 @@ int main2()
                 ShowAllAccInfo();
                 break;
             case EXIT:
+                for(int i = 0; i < accNum; ++i){
+                    delete accArr[i];
+                }
                 return 0;
                 break;
             default:
@@ -72,17 +116,14 @@ void ShowMenu()
 void MakeAccount()
 {
     int id, balance;
-    char cus_name[name_LEN];
+    char cus_name[NAME_LEN];
 
     cout << "[1. 계좌 개설]" << endl;
     cout << "1) 계좌 ID: ";  cin >> id;
     cout << "2) 이름: "; cin >> cus_name;
     cout << "3) 입금액: "; cin >> balance;
 
-    acc[accNum].ID = id;
-    acc[accNum].balance = balance;
-    strcpy(acc[accNum].name, cus_name);
-    ++accNum;
+    accArr[accNum++] = new Account(id, balance, cus_name);
     return;
 }
 
@@ -93,9 +134,8 @@ void DepositMoney()
     cout << "1) 입금할 계좌ID: "; cin >> id;
     cout << "2) 입금할 금액: "; cin >> money;
     for(int i = 0; i < accNum; ++i){
-        if(id == acc[i].ID){
-            acc[i].balance += money;
-            cout << "잔액: " << acc[i].balance << endl;
+        if(id == accArr[i]->GetAccID()){
+            accArr[i]->Deposit(money);
             cout << "입금 완료" << endl;
             return;
         }
@@ -109,13 +149,11 @@ void WithdrawMoney()
     cout << "1) 출금할 계좌ID: "; cin >> id;
     cout << "2) 출금할 금액: "; cin >> money;
     for(int i = 0; i < accNum; ++i){
-        if(id == acc[i].ID){
-            if(acc[i].balance < money){
+        if(id == accArr[i]->GetAccID()){
+            if(accArr[i]->Withdraw(money) == 0){
                 cout << "잔액 부족 !!!! " << endl;
                 return;
             }
-            acc[i].balance -= money;
-            cout << "잔액: " << acc[i].balance << endl;
             cout << "출금 완료" << endl;
             return;
         }
@@ -126,10 +164,9 @@ void WithdrawMoney()
 void ShowAllAccInfo()
 {
     for(int i = 0; i < accNum; ++i){
-        cout << "계좌 ID: " << acc[i].ID << endl;
-        cout << "이름: " << acc[i].name << endl;
-        cout << "금엑: " << acc[i].balance << endl;
+        accArr[i]->ShowAccInfo();
+        cout << endl;
     }
 }
 
-#endif
+
