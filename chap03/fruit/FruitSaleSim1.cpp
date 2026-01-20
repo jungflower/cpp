@@ -25,6 +25,10 @@ public:
 
     int SalesApple(int money)
     {
+        if(money < 0){
+            cout << "잘못된 정보가 전달되어 판매를 취소합니다." << endl;
+            return 0;
+        }
         int num = money / APPLE_PRICE;
         myMoney += money;
         numOfApples -= num;
@@ -53,6 +57,10 @@ public:
 
     void BuyApples(FruitSeller& seller, int money)
     {
+        if(money < 0){
+            cout << "잘못된 정보가 전달되어 판매를 취소합니다." << endl;
+            return;
+        }
         numOfApples += seller.SalesApple(money); // 메세지 전달 기법 사용
         myMoney -= money;
     }
