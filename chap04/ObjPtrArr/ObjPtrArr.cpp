@@ -42,7 +42,7 @@ public:
 
 int main()
 {
-    Person* parr[3];
+    Person* parr[3]; // 객체 포인터 배열 사용
     char namestr[100];
     int age;
 
