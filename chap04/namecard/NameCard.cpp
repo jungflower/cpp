@@ -17,11 +17,35 @@ public:
         name = new char[strlen(myname) + 1];
         company = new char[strlen(mycompany) + 1];
         number= new char[strlen(mynumber) + 1];
-        rank = new char[4];
-
+        
         strcpy(name, myname);
         strcpy(company, mycompany);
         strcpy(number, mynumber);
+        SwitchRank(myrank);
+    }
+    NameCard(NameCard& copy)
+    {
+        name = new char[strlen(copy.name) + 1];
+        company = new char[strlen(copy.company) + 1];
+        number= new char[strlen(copy.number) + 1];
+        rank = new char[strlen(copy.rank) + 1];
+
+        strcpy(name, copy.name);
+        strcpy(company, copy.company);
+        strcpy(number, copy.number);
+        strcpy(rank, copy.rank);
+    }
+
+    void ShowNameCardInfo() const
+    {
+        cout << "이름: " << name << endl;
+        cout << "회사: " << company << endl;
+        cout << "전화번호: " << number << endl;
+        cout << "직급: " << rank << endl << endl;
+    }
+    void SwitchRank(int myrank){
+        rank = new char[4];
+
         switch(myrank){
             case CLERK:
                 strcpy(rank, "사원");
@@ -39,13 +63,7 @@ public:
                 strcpy(rank, "과장");
                 break;
         }
-    }
-    void ShowNameCardInfo() const
-    {
-        cout << "이름: " << name << endl;
-        cout << "회사: " << company << endl;
-        cout << "전화번호: " << number << endl;
-        cout << "직급: " << rank << endl << endl;
+        return;
     }
 
     ~NameCard()
@@ -60,10 +78,12 @@ public:
 int main()
 {
     NameCard manClerk("Lee", "ABCEng", "010-1111-2222", COMP_POS::CLERK);
+    NameCard copy1 = manClerk;
     NameCard manSENIOR("Hong", "OrangeEng", "010-3333-4444", COMP_POS::SENIOR);
-    NameCard manASSIST("Kim", "SoGoodComp", "010-5555-6666", COMP_POS::ASSIST);
+    //NameCard manASSIST("Kim", "SoGoodComp", "010-5555-6666", COMP_POS::ASSIST);
     manClerk.ShowNameCardInfo();
+    copy1.ShowNameCardInfo();
     manSENIOR.ShowNameCardInfo();
-    manASSIST.ShowNameCardInfo();
+    //manASSIST.ShowNameCardInfo();
     return 0;
 }
